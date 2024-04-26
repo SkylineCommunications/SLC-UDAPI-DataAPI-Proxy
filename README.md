@@ -1,16 +1,18 @@
 # UDAPI-DataAPI-Forwarding
 
-🥁🥁 A PROXY to leverage Data API features from outside 🥁🥁
+## 🥁🥁 A PROXY to leverage Data API features from outside 🥁🥁
 
-Ever heard about [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)?
-This is clever module allows the automatic generation of elements based on auto-generated connectors, all by simply pushing JSON formatted data towards this API.
+Ever heard about [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) ? 
+This clever DataMiner module allows the automatic generation of elements and auto-generated connectors, simply by pushing JSON formatted data towards this data API.
 
-Currently this feature is only available from within the local instance.  **That's why this script solution can come in handy!**
+Currently this feature is only available from within the local instance.  **That's why this PROXY script can come in handy!**
 
-This automationscript solution acts as a PROXY that consumes the [User Defined APIs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) to pass data over to the local Data-API.
-!! this means that you can already leverage the data API feature from outside in a secure manner. 
-Simply by leveraging this proxy automationscript configured as User Defined API in a secure way. (security: see [User Defined API tokens](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html))
+This automation script acts as a PROXY that consumes the [User Defined APIs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) to pass data over to the local Data-API.
+!! this means that you can already leverage the data API feature from outside, simply by leveraging this proxy, configured as User Defined API in a secure way. (security: see [User Defined API tokens](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html))
 
+> [!WARNING]
+> This proxy was made as a proof of concept to expose the Data API externally in a secure manner via the User Defined APIs
+> Use it with caution, as every data push will result in a script-run on this proxy to pass data to the Data API.
 
 Follow along, and see how also you can set up this proxy yourself and learn how to use the Data API from outside. 🏆
 
@@ -93,7 +95,7 @@ The result is expected to show if it was successful (_200 OK_, or in case it fai
 After trying this out, you will notice an element appeared on your system, every update you now push, will reflect the parameter updates instantly!
 
 > [!CAUTION]
-> note that everytime you query this PROXY, a scriptrun will occur on your DataMiner to process and pass over this data to the Data API.
+> note that everytime you query this PROXY, a script-run will occur on your DataMiner to process and pass over this data to the Data API.
 > Keep this in mind to only use this under specific cases to avoid impact on your system.
 > In the future there might be updates on DataMiner that allow Data API to be used directly with security in order to avoid this PROXY workaround.
 
