@@ -1,5 +1,7 @@
 # UDAPI-DataAPI-Forwarding
 
+🥁🥁 A PROXY to leverage Data API features from outside 🥁🥁
+
 Ever heard about [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)?
 This is clever module allows the automatic generation of elements based on auto-generated connectors, all by simply pushing JSON formatted data towards this API.
 
@@ -57,15 +59,48 @@ This token will also be needed to grant access via the use of a **Bearer Token**
 > Let's now look into how you can leverage this Data API proxy with performing a simple test!
 
 ## Add URL encoded parameters
+To demonstrate this PROXY script, let's get started and sent some commands via a client.
+In this example I used [Postman](https://www.postman.com/) to test around.
+
+The [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) requires two important fields:
+- The **identifier**, stored as the General Parameter "Data API Identifier", must be unique within the DMS cluster. The identifier serves as the initial name of the element, which can be renamed later at any time as the Data API uses the Data API Identifier.
+- The **type** denotes the name of the auto-generated connector.
+
+Since the PROXY script needs to pass over this information, you can simply configure the URL encoded parameters **indentifier** and **type** with your appropriate values.
+
+```
+identifier: DataAPI Test Element 1
+type: Skyline DataAPI Test Protocol
+```
+
+As mentioned before: on the **authorization tab**, you can now fill in the **bearer token** with the **User Defined API Token** that you configured.
 
 ![Add URL encoded parameters](/Documentation/3_URL_encoded_parameters.png "Add URL encoded parameters")
 
 ## Send DataAPI PUT command
+All that is remaining is:
+- Configure the **request verb** to use "**PUT**"
+- Make sure your URL points to your DataMiner User Defined API endpoint as you configured it
+- Add a **Body** of type **RAW** --> **JSON**
+   
+And simply fire away!  ✈️📤
+
+The result is expected to show if it was successful (_200 OK_, or in case it failed, you will also see feedback on why it failed.)
+
 ![Send DataAPI PUT command](/Documentation/4_Send_DataAPI_PUT_command.png "Send DataAPI PUT command")
 
 ## Goal: See the Data API result as an element
+After trying this out, you will notice an element appeared on your system, every update you now push, will reflect the parameter updates instantly!
+
+> [!CAUTION]
+> note that everytime you query this PROXY, a scriptrun will occur on your DataMiner to process and pass over this data to the Data API.
+> Keep this in mind to only use this under specific cases to avoid impact on your system.
+> In the future there might be updates on DataMiner that allow Data API to be used directly with security in order to avoid this PROXY workaround.
+
 ![Data API result](/Documentation/1_5_DataAPI%20Test%20Element%201.png "Data API Element result")
 
 ## Automatic protocol and element
-Here you can start configuring alarm thresholds
+Via the **Protocols and Templates** module you will find this newly automatic created connector to be present on your DataMiner.
+You can now start configuring alarm thresholds to further refine how you want to operate this newly received data! 💡
+
 ![Automatic protocol and element](/Documentation/6_Automatic%20protocol%20and%20element.png "Automatic protocol and element")
