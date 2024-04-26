@@ -25,7 +25,7 @@ jobs:
       owner: ${{ github.repository_owner }}
       sonarCloudProjectName: SkylineCommunications_SLC-UDAPI-DataAPI-Proxy
     secrets:
-      # The API-key: generated in the DCP Admin app (https://admin.dataminer.services/) as authentication for a certain DataMiner System.
+      # The API-key: generated in the DCP Admin app (https://admin.dataminer.services/) as authentication for a certain DataMiner System
       api-key: ${{ secrets.DATAMINER_DEPLOY_KEY }}
       sonarCloudToken: ${{ secrets.SONAR_TOKEN }}
     
