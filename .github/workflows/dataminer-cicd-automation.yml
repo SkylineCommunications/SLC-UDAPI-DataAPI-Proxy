@@ -61,14 +61,11 @@ jobs:
     - name: Install DataMiner Deploy
       run: dotnet tool install -g Skyline.DataMiner.CICD.Tools.DataMinerDeploy
     - name: Create Automation Package
-      run: dataminer-package-create dmapp "${{ github.workspace }}" --type automation --name  ${{ github.event.repository.name }} --output "${{ github.workspace }}"
-#     run: dataminer-package-create dmapp "${{ github.workspace }}" --type automation --name  ${{ github.event.repository.name }} --output "${{ github.workspace }}\\_PackageResults"
+      run: dataminer-package-create dmapp "${{ github.workspace }}" --type automation --name  ${{ github.event.repository.name }} --output "${{ github.workspace }}\\packages"
 
     - name: Archive Package
       if: success()
       uses: actions/upload-artifact@v4
       with:
         name: ${{ github.event.repository.name }}
- #      path: ${{ github.workspace }}/_PackageResults
-        path: ${{ github.workspace }}
-        
+        path: ${{ github.workspace }}/packages       
