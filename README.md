@@ -32,6 +32,8 @@ The data we are using in this example (sent via Postman) is as follows:
 }
 ```
 
+Any Key-value pair you supply here, will end up as parameter KPIs with respective data in DataMiner.
+if you want to use more advanced features, please check the docs: [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)
 Feel free to use and test out for yourself!  🤖🤖
 
 ![Data API result](/Documentation/1_5_DataAPI%20Test%20Element%201.png "Data API Element result")
