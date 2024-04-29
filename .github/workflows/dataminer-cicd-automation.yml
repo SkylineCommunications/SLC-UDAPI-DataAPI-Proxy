@@ -61,7 +61,7 @@ jobs:
     - name: Install DataMiner Deploy
       run: dotnet tool install -g Skyline.DataMiner.CICD.Tools.DataMinerDeploy
     - name: Create Automation Package
-      run: dataminer-package-create dmapp "${{ github.workspace }}" --name  ${{ github.event.repository.name }} --output "${{ github.workspace }}\\_PackageResults"
+      run: dataminer-package-create dmapp "${{ github.workspace }}" --type automation --name  ${{ github.event.repository.name }} --output "${{ github.workspace }}\\_PackageResults"
 
     - name: Archive Package
       if: success()
