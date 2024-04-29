@@ -5,7 +5,12 @@
 Ever heard about [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) ? 
 This clever DataMiner module allows the automatic generation of elements and auto-generated connectors, simply by pushing JSON formatted data towards this data API.
 
-Currently this feature is only available from within the local instance.  **That's why this PROXY script can come in handy!**
+Also have a read here: [Scripted Connectors are here!](https://community.dataminer.services/scripted-connectors-are-here/)
+This will guide you on how to enable the soft-launch option to get started with this feature.
+look for _**"A quick guide to activating the DataAPI soft-launch option"**_
+
+
+Currently this feature is only available from within the local DataMiner instance.  **That's why this PROXY script can come in handy!**
 
 This automation script acts as a PROXY that consumes the [User Defined APIs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) to pass data over to the local Data-API.
 !! this means that you can already leverage the data API feature from outside, simply by leveraging this proxy, configured as User Defined API in a secure way. (security: see [User Defined API tokens](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html))
