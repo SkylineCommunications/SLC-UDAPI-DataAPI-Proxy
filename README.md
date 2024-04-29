@@ -2,15 +2,13 @@
 
 ## 🥁🥁 A PROXY to leverage Data API features from outside 🥁🥁
 
-Ever heard about [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) ? 
-This clever DataMiner module allows the automatic generation of elements and auto-generated connectors, simply by pushing JSON formatted data towards this data API.
+Ever heard about [Scripted Connectors](https://community.dataminer.services/scripted-connectors-are-here/)?
+if not, take a minute to read the above article, and it will explain you all about this clever DataMiner module that allows the automatic generation of elements and auto-generated connectors, simply by pushing JSON formatted data towards this data API.
+This will guide you on how to enable the soft-launch option to get started with this feature. (look for _**"A quick guide to activating the DataAPI soft-launch option"**_)
 
-Also have a read here: [Scripted Connectors are here!](https://community.dataminer.services/scripted-connectors-are-here/)
-This will guide you on how to enable the soft-launch option to get started with this feature.
-look for _**"A quick guide to activating the DataAPI soft-launch option"**_
+Note: this feature requires _**DataMiner 10.4.2 or higher**_.
+Currently this feature is only available and to be used from within the local DataMiner instance.  **!! That's why this PROXY script can come in handy!**
 
-
-Currently this feature is only available from within the local DataMiner instance.  **That's why this PROXY script can come in handy!**
 
 This automation script acts as a PROXY that consumes the [User Defined APIs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) to pass data over to the local Data-API.
 !! this means that you can already leverage the data API feature from outside, simply by leveraging this proxy, configured as User Defined API in a secure way. (security: see [User Defined API tokens](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html))
@@ -38,7 +36,7 @@ The data we are using in this example (sent via Postman) is as follows:
 ```
 
 Any Key-value pair you supply here, will end up as parameter KPIs with respective data in DataMiner.
-if you want to use more advanced features, please check the docs: [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)
+if you want to use more advanced features, please check the **docs**: [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)
 Feel free to use and test out for yourself!  🤖🤖
 
 ![Data API result](/Documentation/1_5_DataAPI%20Test%20Element%201.png "Data API Element result")
