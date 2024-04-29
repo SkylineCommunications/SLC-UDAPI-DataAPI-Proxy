@@ -49,10 +49,8 @@ jobs:
   #         api-key: ${{ secrets.DATAMINER_DEPLOY_KEY }}
   #         # Id of the uploaded artifact
   #         artifact-id: ${{ needs.CI.outputs.artifact-id }}
-
-
- CD:
-
+  
+  CD:
     runs-on: windows-latest
     needs: CI
     steps:
