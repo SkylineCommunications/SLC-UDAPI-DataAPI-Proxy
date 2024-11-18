@@ -1,117 +1,55 @@
-# UDAPI-DataAPI-Forwarding
+# UDAPI-DataAPI-Proxy
 
-## 🥁🥁 A PROXY to leverage Data API features from outside 🥁🥁
+## A Proxy for external interaction with Data API
 
-Ever heard about [Scripted Connectors](https://community.dataminer.services/scripted-connectors-are-here/)? 
+This document explains how to use a proxy script to leverage Data API features from outside the local DataMiner instance.
 
-If not, take a minute to read the above article, and it will explain you all about this clever DataMiner module that allows the automatic generation of elements and auto-generated connectors, simply by pushing JSON formatted data towards this data API. 
+### Prerequisites
 
-This article will guide you on how to enable the soft-launch option to get started. (ref _**"A quick guide to activating the DataAPI soft-launch option"**_)
+- DataMiner 10.4.2 or higher
+- Cloud connected agent with this User Defined API deployed to
 
-> [!NOTE]
-> This feature requires _**DataMiner 10.4.2 or higher**_.
-> Currently Data API can only be used from within the local DataMiner instance.
-> **!! That's why this PROXY script will come in handy!**  keep on reading... 🤩
+### Overview
 
+Currently Data API can only be used within the local DataMiner instance. This proxy script allows external access by consuming the User Defined APIs to pass data to the local Data API.
 
-This automation script acts as a PROXY that consumes the [User Defined APIs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) to pass data over to the local Data-API.
-!! this means that you can already leverage the data API feature from outside, simply by leveraging this proxy, configured as User Defined API in a secure way. (security: see [User Defined API tokens](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html))
+### Important Notes
 
-> [!WARNING]
-> This proxy was made as a proof of concept to expose the Data API externally in a secure manner via the User Defined APIs
-> Use it with caution, as every data push will result in a script-run on this proxy to pass data to the Data API.
+This User Defined API is a proof of concept for securely exposing Data API externally.
+Use with caution, as each data push triggers a script run on the proxy.
 
-Follow along, and see how also you can set up this proxy yourself and learn how to use the Data API from outside. 🏆
+### Example Data
 
-## Goal: Data API result
-Below you can already see how the end result will look like visualised as an element in DataMiner. 🔎
+The following JSON data is used in this example:
 
-The data we are using in this example (sent via Postman) is as follows:
-
-```
+```json
 {
-  "Customer.Name": "Ziine",
-  "Customer.Contact": "[EXTERNAL]Thijs V.",
-  "KPI.1" : "99%",
-  "KPI.2": 10024,
-  "KPI.3": "LIVE",
-  "KPI.4": "STABLE"
+  "Server Name": "WebServer001",
+  "CPU Utilization": 78.5
 }
 ```
 
-Any Key-value pair you supply here, will end up as parameter KPIs with respective data in DataMiner.
-if you want to use more advanced features, please check the **docs**: [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html)
-Feel free to use and test out for yourself!  🤖🤖
+### Steps to Get Started
 
-![Data API result](/Documentation/1_5_DataAPI%20Test%20Element%201.png "Data API Element result")
+1. **Deploy the User Defined API**: Deploy from the catalog the script onto your (cloud-enabled) DataMiner system. For full details see: [User-Defined APIs - Managing APIs and tokens in DataMiner Cube | DataMiner Docs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html)
+1. **Configure User Defined API**:
+   - Configure the User Defined API to expose Data API as an external API interface with endpoints: `data/parameters` and `data/config`
+   - Use **Raw body** for method execution.
+   - Secure the API with an API token.
+  
+   ![Data API User Defined API](/Documentation/1_UD_API.png)
+1. **Add URL Encoded Parameters**:
+   - Use a client like Postman to send commands.
+   - Configure URL encoded parameters `identifier` and `type`.
+1. **Send DataAPI PUT Command**:
+   - Set the request verb to **PUT**.
+   - Point the URL to your configured User Defined API endpoint.
+   - Add a **Body** with the **JSON** data.
 
-## Let's get started!
-Deploy this automationscript onto your (cloud enabled) DataMiner system. 
+### Result
 
-## Configure User Defined API
-By configuring the User Defined API on top of this script, you can expose this as an external API interface. 
-The endpoint is custom to configure.  In this example I used a similar endpoint as the  Data API uses.
+After sending the data, an element will appear on your system, reflecting the parameter updates.
 
-```
-api/data/parameters
-```
+![Result](/Documentation/2_Result.png)
 
-You are free to configure this as you like, as long as you of course also use your configured endpoint inside your client when you push data over.
-
-Method of execution can be configured to use **Raw body**. This will allow the content to be picked up by this PROXY script.
-in order to make this User Defined API secured, please go ahead and configure an existing (or new) API token.
-This token will also be needed to grant access via the use of a **Bearer Token**.
-
-![Configure User Defined API](/Documentation/2_configure_API.png "Configure User Defined API")
-
-
-> [!NOTE]
-> **That's it... you're all set!** 💡🟢
-> Let's now look into how you can leverage this Data API proxy with performing a simple test!
-
-## Add URL encoded parameters
-To demonstrate this PROXY script, let's get started and sent some commands via a client.
-In this example I used [Postman](https://www.postman.com/) to test around.
-
-The [DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) requires two important fields:
-- The **identifier**, stored as the General Parameter "Data API Identifier", must be unique within the DMS cluster. The identifier serves as the initial name of the element, which can be renamed later at any time as the Data API uses the Data API Identifier.
-- The **type** denotes the name of the auto-generated connector.
-
-Since the PROXY script needs to pass over this information, you can simply configure the URL encoded parameters **indentifier** and **type** with your appropriate values.
-
-```
-identifier: DataAPI Test Element 1
-type: Skyline DataAPI Test Protocol
-```
-
-As mentioned before: on the **authorization tab**, you can now fill in the **bearer token** with the **User Defined API Token** that you configured.
-
-![Add URL encoded parameters](/Documentation/3_URL_encoded_parameters.png "Add URL encoded parameters")
-
-## Send DataAPI PUT command
-All that is remaining is:
-- Configure the **request verb** to use "**PUT**"
-- Make sure your URL points to your DataMiner User Defined API endpoint as you configured it
-- Add a **Body** of type **RAW** --> **JSON**
-   
-And simply fire away!  ✈️📤
-
-The result is expected to show if it was successful (_200 OK_, or in case it failed, you will also see feedback on why it failed.)
-
-![Send DataAPI PUT command](/Documentation/4_Send_DataAPI_PUT_command.png "Send DataAPI PUT command")
-
-## Goal: See the Data API result as an element
-After trying this out, you will notice an element appeared on your system, every update you now push, will reflect the parameter updates instantly!
-
-> [!CAUTION]
-> note that everytime you query this PROXY, a script-run will occur on your DataMiner to process and pass over this data to the Data API.
-> Keep this in mind to only use this under specific cases to avoid impact on your system.
-> In the future there might be updates on DataMiner that allow Data API to be used directly with security in order to avoid this PROXY workaround.
-
-![Data API result](/Documentation/1_5_DataAPI%20Test%20Element%201.png "Data API Element result")
-
-## Automatic protocol and element
-Via the **Protocols and Templates** module you will find this newly automatic created connector to be present on your DataMiner.
-You can now start configuring alarm thresholds to further refine how you want to operate this newly received data! 💡
-
-![Automatic protocol and element](/Documentation/6_Automatic%20protocol%20and%20element.png "Automatic protocol and element")
+The element will be associated with an auto-generated *connector* which will be present in the **Protocols and Templates** module. In there you can configure alarm thresholds and trending to manage the received data.
