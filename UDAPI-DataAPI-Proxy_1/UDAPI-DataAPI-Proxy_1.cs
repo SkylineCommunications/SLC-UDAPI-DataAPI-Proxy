@@ -78,7 +78,6 @@ namespace UDAPI_DataAPI_Proxy_1
 		[AutomationEntryPoint(AutomationEntryPointType.Types.OnApiTrigger)]
 		public ApiTriggerOutput OnApiTrigger(IEngine engine, ApiTriggerInput requestData)
 		{
-			// /fW4SXxfiXzirU1bH5+9IHu13u4kX2oUaiAR/NzMjtU=
 			HttpStatusCode responseStatusCode;
 			string responseBody;
 
