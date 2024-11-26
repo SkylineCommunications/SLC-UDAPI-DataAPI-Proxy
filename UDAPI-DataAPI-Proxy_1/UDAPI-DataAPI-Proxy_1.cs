@@ -41,29 +41,34 @@ Any inquiries can be addressed to:
 	Contact	: Ben Vandenberghe
 
 ****************************************************************************
-Revision History:
-
-DATE		VERSION		AUTHOR			COMMENTS
-
-21/02/2024	1.0.0.1		TVO, Skyline	Initial version
-****************************************************************************
 */
 
-namespace UDAPI_DataAPI_Forwarding_1
+namespace UDAPI_DataAPI_Proxy_1
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Net;
 	using System.Net.Http;
+	using System.Net.NetworkInformation;
+	using System.Text;
+
 	using Skyline.DataMiner.Automation;
+
 	using Skyline.DataMiner.Net.Apps.UserDefinableApis;
 	using Skyline.DataMiner.Net.Apps.UserDefinableApis.Actions;
-	using Skyline.DataMiner.Net.ReportsAndDashboards;
 
 	/// <summary>
 	/// Represents a DataMiner Automation script.
 	/// </summary>
 	public class Script
 	{
+		private static readonly string hostFullName = Extensions.GetHostFullName();
+		private static readonly HttpClient sharedClient = new HttpClient()
+		{
+			BaseAddress = new Uri($"https://{hostFullName}/data/"),
+			Timeout = TimeSpan.FromMinutes(2),
+		};
+
 		/// <summary>
 		/// The API trigger.
 		/// </summary>
@@ -78,30 +83,29 @@ namespace UDAPI_DataAPI_Forwarding_1
 
 			try
 			{
-				var method = requestData.RequestMethod;
-				var route = requestData.Route;
-				var body = requestData.RawBody;
-				var parameters = requestData.QueryParameters;
-
-				string identifier;
-				string type;
-
-				if (!parameters.TryGetValue("identifier", out identifier) || !parameters.TryGetValue("type", out type))
+				var route = requestData.Route.TrimStart("data/");
+				switch (route)
 				{
-					var exception = $"Received {method} request for route: '{route}' url parameters 'identifier' and 'type' are mandatory! {String.Join(", ", parameters.GetAllKeys())}";
-					throw new ArgumentException(exception);
-				}
+					case "parameters":
+						(responseStatusCode, responseBody) = PushDataToParameters(requestData);
+						break;
 
-				responseStatusCode = PushDataToLocalApi(identifier, type, body, out responseBody);
+					case "config":
+						(responseStatusCode, responseBody) = PushDataToConfig(requestData);
+						break;
+
+					default:
+						throw new NotSupportedException($"Route '{requestData.Route}' is not supported");
+				}
 			}
 			catch (ArgumentException e)
 			{
 				responseBody = e.Message;
 				responseStatusCode = HttpStatusCode.BadRequest;
 			}
-			catch
+			catch (Exception e)
 			{
-				responseBody = "An unexpected error happened in the proxy script...";
+				responseBody = e.Message;
 				responseStatusCode = HttpStatusCode.InternalServerError;
 			}
 
@@ -112,26 +116,85 @@ namespace UDAPI_DataAPI_Forwarding_1
 			};
 		}
 
-		private static HttpStatusCode PushDataToLocalApi(string identifier, string type, string body, out string responseBody)
+		private static (HttpStatusCode statusCode, string response) PushDataToParameters(ApiTriggerInput requestData)
 		{
-			string apiUrl = "http://localhost:34567/api/data/parameters";
-
-			// Create HttpClient instance
-			using (HttpClient httpClient = new HttpClient())
+			if (requestData.RequestMethod != RequestMethod.Put)
 			{
-				// Add headers
-				httpClient.DefaultRequestHeaders.Add("identifier", identifier);
-				httpClient.DefaultRequestHeaders.Add("type", type);
-
-				// Create StringContent with your JSON data
-				StringContent content = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
-
-				// Execute PUT request on internal Data API
-				var result = httpClient.PutAsync(apiUrl, content).Result;
-				responseBody = result.Content.ReadAsStringAsync().Result;
-
-				return result.StatusCode;
+				var exception = $"Received '{requestData.RequestMethod}' request for route '{requestData.Route}', request must use '{RequestMethod.Put}'";
+				return (HttpStatusCode.MethodNotAllowed, exception);
 			}
+
+			if (!requestData.QueryParameters.TryGetValue("identifier", out string identifier) || !requestData.QueryParameters.TryGetValue("type", out string type))
+			{
+				var exception = $"Received {requestData.RequestMethod} request for route: '{requestData.Route}', 'identifier' and 'type' are mandatory {Environment.NewLine}{String.Join(", ", requestData.QueryParameters.GetAllKeys())}";
+				throw new ArgumentException(exception);
+			}
+
+			return PushDataToLocalApi("api/data/parameters", new Dictionary<string, string>
+			{
+				["Identifier"] = identifier,
+				["type"] = type,
+			},
+				requestData.RawBody);
+		}
+
+		private static (HttpStatusCode statusCode, string response) PushDataToConfig(ApiTriggerInput requestData)
+		{
+			if (requestData.RequestMethod != RequestMethod.Put)
+			{
+				var exception = $"Received '{requestData.RequestMethod}' request for route '{requestData.Route}', request must use '{RequestMethod.Put}'";
+				return (HttpStatusCode.MethodNotAllowed, exception);
+			}
+
+			if (!requestData.QueryParameters.TryGetValue("type", out string type))
+			{
+				var exception = $"Received {requestData.RequestMethod} request for route: '{requestData.Route}', 'type' is mandatory {Environment.NewLine}{String.Join(", ", requestData.QueryParameters.GetAllKeys())}";
+				throw new ArgumentException(exception);
+			}
+
+			return PushDataToLocalApi("api/config", new Dictionary<string, string>
+			{
+				["type"] = type,
+			},
+				requestData.RawBody);
+		}
+
+		private static (HttpStatusCode statusCode, string response) PushDataToLocalApi(string url, Dictionary<string, string> headers, string body)
+		{
+			// Create StringContent with your JSON data
+			StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
+
+			// Add headers
+			foreach (var header in headers)
+			{
+				content.Headers.Add(header.Key, header.Value);
+			}
+
+			// Execute PUT request on internal Data API
+			var result = sharedClient.PutAsync(url, content).Result;
+			string responseBody = result.Content.ReadAsStringAsync().Result;
+
+			return (result.StatusCode, responseBody);
+		}
+	}
+
+	internal static class Extensions
+	{
+		public static string TrimStart(this string original, string prefixToTrim, StringComparison comparisonType = StringComparison.OrdinalIgnoreCase)
+		{
+			if (!original.StartsWith(prefixToTrim, comparisonType))
+			{
+				return original;
+			}
+
+			return original.Substring(prefixToTrim.Length);
+		}
+
+		public static string GetHostFullName()
+		{
+			string hostName = Dns.GetHostName();
+			string domainName = IPGlobalProperties.GetIPGlobalProperties().DomainName;
+			return $"{hostName}.{domainName}";
 		}
 	}
 }
