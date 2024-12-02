@@ -29,9 +29,9 @@ Deploy from the catalog the script onto your (cloud-enabled) DataMiner system. F
 1. Use **Raw body** for method execution.
 1. Secure the API with an API token.
 
-![Data API User Defined API Configure](/Documentation/2_UD_API.png)
+![Data API User Defined API Configure](./images/2_UD_API.png)
 
-![Data API User Defined API Overview](/Documentation/1_UD_API.png)
+![Data API User Defined API Overview](./images/1_UD_API.png)
 
 ### Use Data API via the Proxy
 
@@ -78,6 +78,6 @@ After executing the command:
 - A new element should appear in your DataMiner system.
 - Every update you send afterward will instantly be reflected in your new element.
 
-![Result](/Documentation/2_Result.png)
+![Result](./images/2_Result.png)
 
 The element will be associated with an auto-generated *connector* which will be present in the **Protocols and Templates** module. In there you can configure alarm thresholds and trending to manage the received data.
