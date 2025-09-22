@@ -59,7 +59,10 @@ documentation_url:
 # Format: 'name <email> (url)'
 #   The name is required; max 256 characters.
 #   The email and url are optional, and should be in valid email/URL formats.
-owners: []
+owners: 
+  - name: Data Acquisition 
+    email: support.data-acquisition@skyline.be
+    url:
 # [Optional]
 # Tags that allow you to categorize your Catalog items.
 #   Max number of tags: 5
