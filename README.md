@@ -1,60 +1,55 @@
-# UDAPI-DataAPI-Proxy
+# User-Defined API DataAPI Proxy
 
-## A Proxy to Access Data API Externally
+## About
 
-[DataMiner Data API](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Data_API.html) is solution currently in [soft-launch](https://community.dataminer.services/scripted-connectors-are-here/) that offers flexible access to data from any source imaginable, across hardware, software, and cloud services. Enabling automated creation and modification of custom elements using raw values sent via JSON data.
+This package contains a [user-defined API](https://aka.dataminer.services/UDA) that functions as a secure reverse proxy to enable external interaction with Data API.
 
-This data is directly reflected in the element, and it can be easily updated using the same API, eliminating the need to develop a connector.
+The [DataMiner Data API](https://aka.dataminer.services/data_api), which is currently still in [soft-launch](https://community.dataminer.services/scripted-connectors-are-here/), offers flexible access to data from any source imaginable, across hardware, software, and cloud services. This data is directly reflected in the element, and can be easily updated using the same API, eliminating the need to develop a connector.
 
-Currently, Data API is limited to only accept local request, most commonly through [Scripted Connectors](https://docs.dataminer.services/user-guide/Advanced_Modules/Data_Sources/Scripted_Connectors.html).
+Currently, the Data API is limited to only accept local requests, most commonly through [scripted connectors](https://aka.dataminer.services/scripted_connectors).
 
-This [User-Defined API](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs.html) offers a proof-of-concept solution for remote access, functioning as a secure reverse proxy to enable external interaction with Data API.
+## Setting up the proxy script
 
-This documentation explains how you can set up and use the **UDAPI-DataAPI-Proxy** to extend **Data API** functionality beyond the local DataMiner instance.
+### Deploying the user-defined API
 
-## Prerequisites
+Deploy the script onto your cloud-enabled DataMiner System.
 
-- DataMiner 10.4.2 or higher
-- Cloud connected agent with this User Defined API deployed to
+See also: [Managing APIs and tokens in DataMiner Cube](https://aka.dataminer.services/managing_apis_and_tokens_in_cube)
 
-## Setting up the Proxy Script
+### Configuring the user-defined API
 
-### Deploy the User Defined API
+1. Configure the user-defined API to expose the Data API as an external API interface with the endpoints `data/parameters` and `data/config`.
 
-Deploy from the catalog the script onto your (cloud-enabled) DataMiner system. For full details see: [User-Defined APIs - Managing APIs and tokens in DataMiner Cube | DataMiner Docs](https://docs.dataminer.services/user-guide/Advanced_Modules/User-Defined_APIs/UD_APIs_Viewing_in_Cube.html)
+1. Set *Method to be executed* to "**Raw body**".
 
-### Configure User Defined API
+   ![Data API User Defined API Configure](./images/2_UD_API.png)
 
-1. Configure the User Defined API to expose Data API as an external API interface with endpoints `data/parameters` and `data/config`
-1. Use **Raw body** for method execution.
 1. Secure the API with an API token.
 
-![Data API User Defined API Configure](./images/2_UD_API.png)
+   ![Data API User Defined API Overview](./images/1_UD_API.png)
 
-![Data API User Defined API Overview](./images/1_UD_API.png)
+### Using the Data API via the proxy
 
-### Use Data API via the Proxy
+In this example, the endpoint `/api/custom/data/parameters` will be used with the HTTP verb **PUT** to send data to DataMiner and automatically create an element.
 
-Use an HTTP client (e.g., [Postman](https://www.postman.com/)) to send data to Data API via the Proxy.
+You can use any HTTP client to send data to the Data API via the proxy (e.g. [Postman](https://www.postman.com/)).
 
-For this example, the endpoint `/api/custom/data/parameters` with the HTTP Verb **PUT** will be used to send data to DataMiner and automatically create an element and any HTTP client can be used to send data to Data API via the Proxy (e.g., [Postman](https://www.postman.com/)).
+1. **Add URL-encoded parameters.**
 
-1. Add URL Encoded Parameters
+   When pushing data to DataMiner, you need to provide two URL parameters: `identifier` and `type`.
 
-   When pushing data to DataMiner, you need to provide two URL parameters `identifier` and `type`.
-
-   > [!IMPORTANT]
-   > This is different that interacting directly with Data API where the `identifier` and `type` should be provided as HTTP Headers and not as URL parameters.
-
-   - `identifier`: A unique identifier (e.g., `DataAPI Test Element 1`). This will be used as the name of the new element.
-   - `type`: The type of the auto-generated connector (e.g., `Skyline DataAPI Test Protocol`).
+   - `identifier`: A unique identifier (e.g. `DataAPI Test Element 1`). This will be used as the name of the new element.
+   - `type`: The type of the auto-generated connector (e.g. `Skyline DataAPI Test Protocol`).
 
    > [!TIP]
-   > Each element requires a unique `identifier`, but they can share a `type`.
-   > Elements that share a `type` will share the same parameters and layout, but can still have distinct data.
+   > Each element requires a unique `identifier`, but elements can share a `type`. Elements that share a `type` will share the same parameters and layout, but can still have distinct data.
 
-1. Configure JSON in the Body
-   The JSON with the parameter data used in this example:
+   > [!IMPORTANT]
+   > When interacting with the Data API directly, `identifier` and `type` should be provided as HTTP headers, not as URL parameters.
+
+1. **Configure JSON in the body.**
+
+   In this example, use the following JSON code:
 
    ```json
    {
@@ -63,21 +58,33 @@ For this example, the endpoint `/api/custom/data/parameters` with the HTTP Verb 
    }
    ```
 
-1. **Configure the Bearer Token**
+1. **Configure the bearer token**
 
-   In Postman, or your HTTP client of choice, configure the **Bearer Token**, in Postman located on the **Authorization tab**, you previously got from [Configure User Defined API](#configure-user-defined-api).
+   In your HTTP client, configure the **bearer token**. In Postman, this token is located on the **Authorization tab**.
 
-1. **Send the Request**  
+   See also [Configuring the user-defined API](#configuring-the-user-defined-api) above.
 
-   Send the PUT request and the result will indicate whether the operation was successful (*200 OK*), or provide feedback in case of failure.
+1. **Send the request**  
+
+   Send the PUT request. The result will indicate whether the operation was successful (*200 OK*) or not. In the latter case, feedback will be provided.
 
 ### Result
 
-After executing the command:
+After executing the PUT request, a new element should appear in your DataMiner System. Also, every update you send afterward will instantly be reflected in your new element.
 
-- A new element should appear in your DataMiner system.
-- Every update you send afterward will instantly be reflected in your new element.
+The element will be associated with an automatically generated *connector*, which will be present in the **Protocols and Templates** module. There, you can configure alarm thresholds and trending to manage the received data.
 
 ![Result](./images/2_Result.png)
 
-The element will be associated with an auto-generated *connector* which will be present in the **Protocols and Templates** module. In there you can configure alarm thresholds and trending to manage the received data.
+## Prerequisites
+
+- DataMiner 10.4.2 or higher
+- A cloud-connected DataMiner Agent on which this user-defined API is deployed.
+
+## Documentation
+
+For more information, see:
+
+- [Data API](https://aka.dataminer.services/data_api)
+- [Scripted connectors](https://aka.dataminer.services/scripted_connectors)
+- [User-Defined APIs](https://aka.dataminer.services/UDA)
