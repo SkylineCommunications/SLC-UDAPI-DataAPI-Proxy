@@ -1,6 +1,6 @@
 /*
 ****************************************************************************
-*  Copyright (c) 2024,  Skyline Communications NV  All Rights Reserved.    *
+*  Copyright (c) 2026,  Skyline Communications NV  All Rights Reserved.    *
 ****************************************************************************
 
 By using this script, you expressly agree with the usage terms and
@@ -194,7 +194,10 @@ namespace UDAPI_DataAPI_Proxy_1
 		{
 			string hostName = Dns.GetHostName();
 			string domainName = IPGlobalProperties.GetIPGlobalProperties().DomainName;
-			return $"{hostName}.{domainName}";
+
+			// If no domain name is set, return localhost, because on a DaaS system the domain name is often not set,
+			// and requests to hostname are not resolved correctly.
+			return String.IsNullOrWhiteSpace(domainName) ? "localhost" : $"{hostName}.{domainName}";
 		}
 	}
 }
