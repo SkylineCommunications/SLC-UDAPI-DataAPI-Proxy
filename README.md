@@ -1,4 +1,4 @@
-# User-Defined API DataAPI Proxy
+# DataAPI Proxy
 
 ## About
 
@@ -20,7 +20,7 @@ See also: [Managing APIs and tokens in DataMiner Cube](https://aka.dataminer.ser
 
 1. Configure the user-defined API to expose the Data API as an external API interface with the endpoints `data/parameters` and `data/config`.
 
-1. Set *Method to be executed* to "**Raw body**".
+1. Set *Method to be executed* to "Raw body".
 
    ![Data API User Defined API Configure](./images/2_UD_API.png)
 
@@ -30,16 +30,16 @@ See also: [Managing APIs and tokens in DataMiner Cube](https://aka.dataminer.ser
 
 ### Using the Data API via the proxy
 
-In this example, the endpoint `/api/custom/data/parameters` will be used with the HTTP verb **PUT** to send data to DataMiner and automatically create an element.
+In this example, the endpoint `/api/custom/data/parameters` will be used with the HTTP verb *PUT* to send data to DataMiner and automatically create an element.
 
 You can use any HTTP client to send data to the Data API via the proxy (e.g. [Postman](https://www.postman.com/)).
 
-1. **Add URL-encoded parameters.**
+1. **Add URL-encoded parameters**
 
    When pushing data to DataMiner, you need to provide two URL parameters: `identifier` and `type`.
 
    - `identifier`: A unique identifier (e.g. `DataAPI Test Element 1`). This will be used as the name of the new element.
-   - `type`: The type of the auto-generated connector (e.g. `Skyline DataAPI Test Protocol`).
+   - `type`: The type of the automatically generated connector (e.g. `Skyline DataAPI Test Protocol`).
 
    > [!TIP]
    > Each element requires a unique `identifier`, but elements can share a `type`. Elements that share a `type` will share the same parameters and layout, but can still have distinct data.
@@ -47,7 +47,7 @@ You can use any HTTP client to send data to the Data API via the proxy (e.g. [Po
    > [!IMPORTANT]
    > When interacting with the Data API directly, `identifier` and `type` should be provided as HTTP headers, not as URL parameters.
 
-1. **Configure JSON in the body.**
+1. **Configure JSON in the body**
 
    In this example, use the following JSON code:
 
@@ -60,7 +60,7 @@ You can use any HTTP client to send data to the Data API via the proxy (e.g. [Po
 
 1. **Configure the bearer token**
 
-   In your HTTP client, configure the **bearer token**. In Postman, this token is located on the **Authorization tab**.
+   In your HTTP client, configure the bearer token. In Postman, this token is located on the *Authorization* tab.
 
    See also [Configuring the user-defined API](#configuring-the-user-defined-api) above.
 
@@ -72,7 +72,7 @@ You can use any HTTP client to send data to the Data API via the proxy (e.g. [Po
 
 After executing the PUT request, a new element should appear in your DataMiner System. Also, every update you send afterward will instantly be reflected in your new element.
 
-The element will be associated with an automatically generated *connector*, which will be present in the **Protocols and Templates** module. There, you can configure alarm thresholds and trending to manage the received data.
+The element will be associated with an automatically generated connector, which will appear in the **Protocols and Templates** module. There, you can configure alarm thresholds and trending to manage the received data.
 
 ![Result](./images/2_Result.png)
 
